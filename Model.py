@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from Layers import conv2d, deconvnet, build_resnet_block
+from Layers import conv2d, dilated_conv2d, deconvnet, build_resnet_block
 
 #This is the first part of the Generator Networks
 def convnet(input, Activation, relu_factor):
@@ -52,3 +52,15 @@ def classification(input):
     conv5 = conv2d(name='conv5D', input=conv4, kernel_size=4, output=1, strides=1, pad='SAME', Activation=None)
     return conv5
 
+#Discriminator Network (Brown)
+def classification_brown(input):
+    N = 64
+    conv1 = conv2D(name='conv1DB', input=input, kernel_size=4, output=2 * N, pad='SAME', Activation=tf.nn.leaky_relu, relu_factor=0.2)
+    conv2 = conv2D(name='conv2DB', input=conv1, kernel_size=4, output=4 * N, pad='SAME', Activation=tf.nn.leaky_relu, relu_factor=0.2)
+    conv3 = conv2D(name='conv3DB', input=conv2, kernel_size=4, output=8 * N, pad='SAME', Activation=tf.nn.leaky_relu, relu_factor=0.2)
+    conv4 = conv2D(name='conv4DB', input=conv3, kernel_size=3, output=8 * N, pad='SAME', Activation=tf.nn.leaky_relu, relu_factor=0.2)
+    conv5 = dilated_conv2d(name='conv5DB', input=conv4, kernel_size=3, output=8 * N, rate=2, pad='SAME', Activation=tf.nn.leaky_relu, relu_factor=0.2)
+    conv6 = dilated_conv2d(name='conv6DB', input=conv5, kernel_size=3, output=8 * N, rate=4, pad='SAME', Activation=tf.nn.leaky_relu, relu_factor=0.2)
+    conv7 = dilated_conv2d(name='conv7DB', input=conv6, kernel_size=3, output=8 * N, rate=8, pad='SAME', Activation=tf.nn.leaky_relu, relu_factor=0.2)
+    conv8 = conv2D(name='conv8DB', input=conv4 + conv7, kernel_size=3, output=8 * N, pad='SAME', Activation=tf.nn.leaky_relu, relu_factor=0.2)
+    conv9 = conv2D(name='conv9DB', input=conv8, kernel_size=1, output=1, strides=1, pad='SAME', Activation=None)

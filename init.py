@@ -3,7 +3,7 @@ import tensorflow as tf
 from skimage.transform import resize
 import os
 from matplotlib.image import imread
-from Model import generator, classification
+from Model import generator, classification, classification_brown
 
 #normalize all image
 def normalize(img):
@@ -66,17 +66,24 @@ if __name__ == '__main__':
     cycleA = generator(input=genA_B)
     cycleB = generator(input=genB_A)
 
-    DLoss_A_Fake = tf.reduce_mean(tf.square(classification(genA_B)))
-    DLoss_B_Fake = tf.reduce_mean(tf.square(classification(genB_A)))
-    DLoss_A_True = tf.reduce_mean(tf.squared_difference(classification(inputA), 1))
-    DLoss_B_True = tf.reduce_mean(tf.squared_difference(classification(inputB), 1))
+    # DLoss_A_Fake = tf.reduce_mean(tf.square(classification(genA_B)))
+    # DLoss_B_Fake = tf.reduce_mean(tf.square(classification(genB_A)))
+    # DLoss_A_True = tf.reduce_mean(tf.squared_difference(classification(inputA), 1))
+    # DLoss_B_True = tf.reduce_mean(tf.squared_difference(classification(inputB), 1))
+
+    DLoss_A_Fake = tf.reduce_mean(tf.square(classification_brown(genA_B)))
+    DLoss_B_Fake = tf.reduce_mean(tf.square(classification_brown(genB_A)))
+    DLoss_A_True = tf.reduce_mean(tf.squared_difference(classification_brown(inputA), 1))
+    DLoss_B_True = tf.reduce_mean(tf.squared_difference(classification_brown(inputB), 1))
 
     # Loss Function for Discriminator
     DLoss_A = (DLoss_A_Fake + DLoss_A_True) / 2.0
     DLoss_B = (DLoss_B_Fake + DLoss_B_True) / 2.0
 
-    GLoss_A_1 = tf.reduce_mean(tf.squared_difference(classification(genA_B), 1))
-    GLoss_B_1 = tf.reduce_mean(tf.squared_difference(classification(genB_A), 1))
+    # GLoss_A_1 = tf.reduce_mean(tf.squared_difference(classification(genA_B), 1))
+    # GLoss_B_1 = tf.reduce_mean(tf.squared_difference(classification(genB_A), 1))
+    GLoss_A_1 = tf.reduce_mean(tf.squared_difference(classification_brown(genA_B), 1))
+    GLoss_B_1 = tf.reduce_mean(tf.squared_difference(classification_brown(genB_A), 1))
     cyc_loss = tf.reduce_mean(tf.abs(cycleA - inputA)) + tf.reduce_mean(tf.abs(cycleB - inputB))
 
     # Loss for Generator

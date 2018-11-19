@@ -14,6 +14,19 @@ def conv2d(name, input, kernel_size, output, pad, strides=2, Activation=None, re
             return res
         return Activation(res, alpha=relu_factor)
 
+#dilated convolution layers
+def dilated_conv2d(name, input, kernel_size, output, rate=1, pad, Activation=None, relu_factor=0.0):
+        input_size = input.get_shape()[-1].value
+        shape = [kernel_size, kernel_size, input_size, output]
+        weights = tf.get_variable(name=name + 'w', shape=shape, initializertf.contrib.layers.xavier_initializer())
+        cons = tf.constant(0.0, shape=[output])
+        bias = tf.Variable(cons, name=name + 'b')
+        dilated_conv = tf.nn.atrous_conv2d(input, weights, rate, padding=pad)
+        res = tf.nn.bias_add(dilated_conv, bias)
+        if Activation is None:
+            return res
+        return Activation(res, alpha=relu_factor)
+
 #residual block
 def build_resnet_block(inputres, dim, name="resnet"):
     with tf.variable_scope(name):
